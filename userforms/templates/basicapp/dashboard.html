@@ -1,0 +1,121 @@
+{% extends "basicapp/base.html" %}
+
+{% block body_block %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<div class="container">
+    
+        <input type="text" id="create_text" placeholder="type">
+        <input type="text" id="content" placeholder="type">
+        <button id="create" data-url="{% url 'basicapp:create'%}" type="button">
+            Create
+        </button>
+        <br>
+        <br>
+        {% for note in note_list%}
+        <div id={{note.pk}}>
+            <table id="note_list_table">
+                <tr>
+                    <td>
+                        <input type="text" class="title"  name="" value="{{note.title}}" disabled/>
+                        <input type="text" class="content"  name="" value="{{note.content}}" disabled/>
+                    </td>
+                    <td>
+                        <span id="editbutton" class="glyphicon glyphicon-pencil" onmouseup="edit(note_id = {{note.pk}})" aria-hidden="true"></span>
+                        <button id="updatebutton" data-url="{% url 'basicapp:update' pk=note.pk %}" type="button">
+                            <span  class="glyphicon glyphicon-ok" onmouseup="updateFunction(note_id={{note.pk}})" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                    <td>
+                        <form action="{% url 'basicapp:delete' pk=note.pk %}" method="POST">
+                            {%csrf_token%}
+                            <button id="deletebutton" type="submit"><span  class="glyphicon glyphicon-trash trash"  aria-hidden="true"></span></button>
+                        </form>
+                        <button id="removebutton" type="submit"><span  id="remove"  class="glyphicon glyphicon-remove" onmouseup="removeChange(note_id={{note.pk}})" aria-hidden="true"></span></button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+{% endfor%}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+function edit(note_id)
+{
+    var updateButton = document.getElementById(note_id).querySelectorAll("#updatebutton");
+    var removeButton = document.getElementById(note_id).querySelectorAll("#removebutton");
+    updateButton[0].style.display="block";
+    removeButton[0].style.display="block";
+    var title = document.getElementById(note_id).querySelectorAll(".title");
+    title[0].removeAttribute("disabled","");
+    var editButton = document.getElementById(note_id).querySelectorAll("#editbutton");
+    var deleteButton = document.getElementById(note_id).querySelectorAll("#deletebutton");
+    editButton[0].style.display="none";
+    deleteButton[0].style.display="none";
+}
+
+
+
+function updateFunction(note_id)
+{
+    
+    var updateButton = document.getElementById(note_id).querySelectorAll("#updatebutton");
+    var urlUpdate = updateButton[0].getAttribute("data-url");
+    var titleInput = document.getElementById(note_id).querySelectorAll(".title");
+    title = titleInput[0].value;
+    $.ajax({
+            type:"POST",
+            url: urlUpdate,
+            dataType:'json',
+            data:{
+            'title':  title,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            }
+        });
+    titleInput[0].disabled=true;
+    var editButton = document.getElementById(note_id).querySelectorAll("#editbutton");
+    var deleteButton = document.getElementById(note_id).querySelectorAll("#deletebutton");
+    editButton[0].style.display="block";
+    deleteButton[0].style.display="block";
+    var updateButton = document.getElementById(note_id).querySelectorAll("#updatebutton");
+    var removeButton = document.getElementById(note_id).querySelectorAll("#removebutton");
+    updateButton[0].style.display="none";
+    removeButton[0].style.display="none";
+}
+
+$("#create").mouseup(function()
+{
+    $.ajax({
+            type:"POST",
+            url: $("#create").attr("data-url"),
+            dataType:'json',
+            data:{
+            'title':   $("#create_text").val(),
+            'content': $('#content').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success(data){
+                alert(data);
+            }
+        });
+        location.reload();
+});
+
+
+function removeChange(note_id)
+{
+    var editButton = document.getElementById(note_id).querySelectorAll("#editbutton");
+    var deleteButton = document.getElementById(note_id).querySelectorAll("#deletebutton");
+    editButton[0].style.display="block";
+    deleteButton[0].style.display="block";
+    var updateButton = document.getElementById(note_id).querySelectorAll("#updatebutton");
+    var removeButton = document.getElementById(note_id).querySelectorAll("#removebutton");
+    updateButton[0].style.display="none";
+    removeButton[0].style.display="none";
+    var titleInput = document.getElementById(note_id).querySelectorAll(".title");
+    titleInput[0].disabled=true;
+    location.reload();
+}
+</script>
+
+{% endblock %}

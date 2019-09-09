@@ -1,0 +1,44 @@
+#note_list_table td {
+    padding: 15px;
+}
+
+
+body {
+	font-family: arial;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+img {
+  border-radius: 100%;
+}
+
+.main-site {
+	padding-top: 5px;
+	width: 95%;
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+#profile_menu {
+	display: none;
+	box-shadow: 10px 5px 5px gray;
+  background:rgb(0,0,0,0.5);
+	position: absolute;
+  right:20px;
+}
+
+.profile_menu_content {
+	position: relative;
+	padding: 20px;
+	margin: 0 auto;
+	background-color: white;
+	width: 400px;
+	top: 5vh;
+}
+
+
+#updatebutton,#removebutton{
+    display:none;
+}
+

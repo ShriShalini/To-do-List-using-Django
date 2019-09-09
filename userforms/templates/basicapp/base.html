@@ -1,0 +1,80 @@
+{% load static %}
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{% static 'css/note.css' %}">
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <ul class="nav navbar-nav">
+        <li><a class="navbar-brand" href="{% url 'index' %}">DJANGO</a></li>
+        <li><a class="navbar-link" href="{% url 'admin:index' %}">Admin</a></li>
+        <li><a class="navbar-link" href="{% url 'basicapp:register' %}">Register</a></li>
+        </ul>
+        {% if not user.is_authenticated %}
+          <ul class="nav navbar-nav">
+            <li><a href="{% url 'basicapp:login' %}">Login</a></li>
+          <ul>
+        {%else%}
+          <ul class="nav navbar-nav navbar-right">
+              <li>
+                      <div id="profile" data-url="{% url 'basicapp:profile' user.username %}" onmouseup='profile()' type="button">
+                        <img id="imageid" class="nav navbar-nav navbar-right" {% if user.userprofileinfo.profile_pic and user.userprofileinfo.profile_pic.url %} src="{{user.userprofileinfo.profile_pic.url}}" {% else %} src="/media/profile_pics/765-default-avatar.png"  {% endif %} width="40" height="40" alt="Image not found"></img>
+                      </div>
+              </li>
+          </ul>
+        {% endif %}   
+    </div>
+</nav>
+<div id="profile_menu">
+	<div class="profile_menu_content">
+		<h1>Hello {{user.username}}</h1>
+    <p id="name"></p>
+    <p id="mail"></p> 
+    <a href="{% url 'logout' %}">
+      <button class="btn btn-danger" type="submit">Log Out</button>
+    </a>
+    <button class="btn btn-danger" id="profile_close_button">Close</button>
+	</div>
+</div>
+
+<div class="">
+    {% block body_block %}
+    {% endblock %}
+</div>
+</body>
+</html>
+
+<script>
+  var profileMenu = document.getElementById("profile_menu")
+  var profileOpenButton= document.getElementById("profile")
+  var profileCloseButton = document.getElementById('profile_close_button')
+  profileCloseButton.addEventListener('click', () => {
+    profileMenu.style.display = "none";
+  })
+
+  function profile()
+  { 
+      var urlProfile = $("#profile").attr("data-url");
+      var url = $("#imgid").attr("src");
+      $.ajax({
+              type:"POST",
+              url: urlProfile,
+              data:{
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+              },
+              success:function(data){
+                  var mail=document.getElementById("mail");
+                  mail.innerHTML=data.email;
+                  var name=document.getElementById("name");
+                  name.innerHTML=data.username;
+                  profileMenu.style.display = "block";
+              }, 
+          });
+  }
+</script>
