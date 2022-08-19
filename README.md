@@ -7,3 +7,5 @@
   <li>Supports multiple users</li>
   <li>Secure (CSRF vulnerability avoided)</li>
 </ol>
+
+Run manage.py in the userforms folder to start the application
